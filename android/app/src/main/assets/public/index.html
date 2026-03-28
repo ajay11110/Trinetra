@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trinetra - Vision Assistant</title>
+    <!-- Use basic system fonts for clean modern look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+</head>
+<body>
+    <!-- Full-Screen Camera Background -->
+    <div class="camera-bg">
+        <video id="videoElement" autoplay playsinline muted></video>
+        <canvas id="canvasElement"></canvas>
+        <div id="loadingOverlay" class="loading-overlay">
+            <div class="spinner"></div>
+            <span id="loadingText">Loading AI Model...</span>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <header class="app-header">
+            <h1>Trinetra Assistant</h1>
+            <p>Smart Vision for Safe Navigation</p>
+        </header>
+        
+        <main class="main-content">
+            <!-- Modern Visual Guidance Block -->
+            <div class="guidance-panel">
+                <div id="directionArrows" class="arrows-display">
+                    <div class="icon-pulse">
+                        <svg class="icon arrow-up" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 4l-8 8h6v8h4v-8h6z"/>
+                        </svg>
+                    </div>
+                </div>
+                <h2 id="statusText" class="status-text" aria-live="polite">System Ready. Press Start.</h2>
+            </div>
+
+            <!-- Controls Panel -->
+            <div class="controls-panel">
+                <div class="button-row">
+                    <button id="btnStart" class="btn btn-primary" aria-label="Start Scanner">
+                        <span>Start Scan</span>
+                    </button>
+                    <button id="btnStop" class="btn btn-danger" disabled aria-label="Stop Scanner">
+                        <span>Stop Scan</span>
+                    </button>
+                    <button id="btnRemember" class="btn btn-info" disabled aria-label="Remember Person">
+                        <span>Remember Face</span>
+                    </button>
+                </div>
+
+                <div class="settings-row">
+                    <label class="toggle-container" for="voiceToggle">
+                        <span class="toggle-label">Voice Guidance</span>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="voiceToggle" checked aria-checked="true">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Name Input Modal (Hidden by Default) -->
+    <div id="nameModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3>Who is this?</h3>
+            <p>Type the name to remember this face.</p>
+            <input type="text" id="personNameInput" placeholder="Enter name (e.g., Mom)" autocomplete="off">
+            <div class="modal-buttons">
+                <button id="btnCancelName" class="btn btn-danger">Cancel</button>
+                <button id="btnSaveName" class="btn btn-success">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TensorFlow.js dependencies (Local Bundled) -->
+    <script src="libs/tf.min.js"></script>
+    <script src="libs/coco-ssd.min.js"></script>
+    <script src="libs/face-api.min.js"></script>
+    
+    <!-- Application Logic -->
+    <script src="script.js"></script>
+</body>
+</html>
