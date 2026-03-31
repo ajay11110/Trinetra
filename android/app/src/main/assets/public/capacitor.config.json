@@ -1,5 +1,5 @@
 {
   "appId": "com.trinetra.app",
   "appName": "Trinetra",
-  "webDir": "www"
+  "webDir": "."
 }

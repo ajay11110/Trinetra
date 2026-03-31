@@ -11,7 +11,6 @@ const canvas = document.getElementById('canvasElement');
 const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
 const btnStart = document.getElementById('btnStart');
-const btnStop = document.getElementById('btnStop');
 const btnRemember = document.getElementById('btnRemember');
 const statusText = document.getElementById('statusText');
 const directionArrows = document.getElementById('directionArrows');
@@ -102,7 +101,9 @@ async function startApp() {
             canvas.height = video.videoHeight;
             
             isScanning = true;
-            btnStop.disabled = false;
+            btnStart.innerText = "Stop Scan";
+            btnStart.classList.add("stop");
+            btnStart.disabled = false;
             btnRemember.disabled = false;
             
             lastAnalysisTime = 0;
@@ -124,8 +125,9 @@ async function startApp() {
 // Stop Scanning
 function stopApp() {
     isScanning = false;
-    btnStop.disabled = true;
     btnRemember.disabled = true;
+    btnStart.innerText = "Start Scan";
+    btnStart.classList.remove("stop");
     btnStart.disabled = false;
     
     if (animationId) cancelAnimationFrame(animationId);
@@ -572,8 +574,13 @@ function closeNameModal() {
 }
 
 // Event Listeners
-btnStart.addEventListener('click', startApp);
-btnStop.addEventListener('click', stopApp);
+btnStart.addEventListener('click', () => {
+    if (isScanning) {
+        stopApp();
+    } else {
+        startApp();
+    }
+});
 btnRemember.addEventListener('click', captureFace);
 btnSaveName.addEventListener('click', savePersonName);
 btnCancelName.addEventListener('click', closeNameModal);

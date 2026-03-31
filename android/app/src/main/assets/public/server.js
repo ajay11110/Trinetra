@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const PORT = 8080;
-const PERSONS_DIR = path.join(__dirname, 'saved persons');
+const PERSONS_DIR = path.join(__dirname, '../../../../../../saved persons');
 
 // Ensure directory exists
 if (!fs.existsSync(PERSONS_DIR)) {
@@ -72,19 +72,27 @@ const server = http.createServer((req, res) => {
 
     // Endpoint to save a face locally
     if (req.url === '/api/save_face' && req.method === 'POST') {
+        console.log(`[Backend] Received POST request to /api/save_face`);
         let body = '';
-        req.on('data', chunk => { body += chunk.toString(); });
+        req.on('data', chunk => { 
+            body += chunk.toString(); 
+        });
         req.on('end', () => {
+            console.log(`[Backend] Finished receiving data. Body length: ${body.length} characters`);
             try {
                 const data = JSON.parse(body);
+                console.log(`[Backend] Successfully parsed JSON. Label: ${data.label}, Image Present: ${!!data.image}`);
                 // Clean the name to make a safe filename
                 const safeName = data.label.replace(/[^a-z0-9]/gi, '_');
                 const jsonPath = path.join(PERSONS_DIR, `${safeName}.json`);
                 const imgPath = path.join(PERSONS_DIR, `${safeName}.png`);
                 
+                console.log(`[Backend] Writing to paths: \n JSON: ${jsonPath} \n IMG: ${imgPath}`);
+                
                 // Write the Face API descriptor data
                 fs.writeFile(jsonPath, JSON.stringify({ label: data.label, descriptor: data.descriptor }, null, 2), (err) => {
                     if (err) {
+                        console.error('[Backend] Failed to save JSON:', err);
                         res.writeHead(500);
                         res.end(JSON.stringify({ error: 'Failed to save face descriptor' }));
                         return;
@@ -94,15 +102,22 @@ const server = http.createServer((req, res) => {
                     if (data.image) {
                         const base64Data = data.image.replace(/^data:image\/png;base64,/, "");
                         fs.writeFile(imgPath, base64Data, 'base64', (err) => {
-                            if (err) console.error("Failed to save image:", err);
+                            if (err) {
+                                console.error("[Backend] Failed to save image:", err);
+                            } else {
+                                console.log(`[Backend] Successfully saved image to: ${imgPath}`);
+                            }
                         });
+                    } else {
+                        console.log(`[Backend] No image data provided in payload.`);
                     }
                     
-                    console.log(`Successfully saved face and photo for: ${data.label}`);
+                    console.log(`[Backend] Successfully completed save operation for: ${data.label}`);
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ success: true, file: `${safeName}.json` }));
                 });
             } catch (e) {
+                console.error("[Backend] Failed to parse JSON body:", e);
                 res.writeHead(400);
                 res.end(JSON.stringify({ error: 'Invalid payload' }));
             }
